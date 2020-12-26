@@ -1,10 +1,10 @@
 ``` js
 
 // in browser
-<script src="./vio-utils/utils.js"></script>
+<script src="https://unpkg.com/vio-utils/utils.js"></script>
+// <script src="https://cdn.jsdelivr.net/npm/vio-utils/utils.js"></script>
 
 // in cli
-npm i vio-utils
 import utils from 'vio-utils'
 
 ```
