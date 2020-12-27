@@ -23,7 +23,7 @@ const utils = {
     return str.substr(0, len)
   },
   
-  // 随机数组
+  // 随机数组 (洗牌算法, 不会改变原数组)
   shuffle(arr) {
     arr = arr.slice()
     let i = arr.length
@@ -325,6 +325,72 @@ const utils = {
   evalFunc(fnStr) {
     return Function(`return ${fnStr}`)()
   },
+  
+  isMobile() {
+    return (/(iPhone|iPod|iPad|Android|ios)/i.test(navigator.userAgent))
+  },
+  isAndroid() {
+    return (/(Android|Adr)/i.test(navigator.userAgent))
+  },
+  isIOS() {
+    return (/\(i[^;]+;( U;)? CPU.+Mac OS X/.test(navigator.userAgent))
+  },
+  isWx() {
+    return (/micromessenger/i.test(navigator.userAgent))
+  },
+  
+  // hexToRgb('#fff')
+  // hexToRgb('#f3558392')
+  // hexToRgb('f35582') 
+  hexToRgb(hex) {
+    let alpha = false,
+        h = hex.slice(hex.startsWith('#') ? 1 : 0)
+    if (h.length === 3) {
+      h = [...h].map(x => x + x).join('')
+    }
+    else if (h.length === 8) {
+      alpha = true
+    }
+    h = parseInt(h, 16)
+    return (
+      'rgb' +
+      (alpha ? 'a' : '') +
+      '(' +
+      (h >>> (alpha ? 24 : 16)) +
+      ', ' +
+      ((h & (alpha ? 0x00ff0000 : 0x00ff00)) >>> (alpha ? 16 : 8)) +
+      ', ' +
+      ((h & (alpha ? 0x0000ff00 : 0x0000ff)) >>> (alpha ? 8 : 0)) +
+      (alpha ? `, ${h & 0x000000ff}` : '') +
+      ')'
+    )
+  },
+  
+  // rgb转16进制颜色
+  rgb2Hex(color) {
+    let rgb = color.split(',')
+    let r = parseInt(rgb[0].split('(')[1], 10)
+    let g = parseInt(rgb[1], 10)
+    let b = parseInt(rgb[2].split(')')[0], 10)
+    let hex = '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
+    return hex
+  },
+  
+  // 判断是否是二代身份证
+  isIdCard(val) {
+    return /^\d{6}(18|19|20|21)\d{2}(0\d|10|11|12)([0-2]\d|30|31)\d{3}(\d|X|x)$/.test(val)
+  },
+  
+  // 通过身份证获取性别
+  getSexById(id) {
+    return id.substr(-2, 1) % 2 === 0 ? '女' : '男'
+  },
+  
+  // 通过身份证获取出生日期
+  getBirthById(id) {
+    return id.substr(6, 8).replace(/^(\d{4})(\d{2})(\d{2})$/, '$1-$2-$3')
+  },
+  
 }
 
 export default utils

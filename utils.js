@@ -1,6 +1,5 @@
 ;(function(win) {
   win.vio = {
-    // 是否是数字
     isNum(val) {
       return val === +val
     },
@@ -17,16 +16,16 @@
     
     // 随机字符串
     randStr(len) {
-      let str = '';
+      let str = ''
       while (str.length < len) {
         str += Math.random().toString(36).substr(2)
       }
       return str.substr(0, len)
     },
     
-    // 随机数组
+    // 随机数组 (洗牌算法, 不会改变原数组)
     shuffle(arr) {
-      arr = arr.slice();
+      arr = arr.slice()
       let i = arr.length
       while (i) {
         let j = Math.floor(Math.random() * i--)
@@ -177,11 +176,6 @@
         .replace('s', o.s)
     },
     
-    // 设置概率
-    getProbability(prob = 0.5) {
-      return prob > Math.random()
-    },
-    
     // 金额千分位逗号隔开
     toThousands(num) {
       return (num+'').replace(/\B(?=(\d{3})+\b)/g, ',')
@@ -226,27 +220,6 @@
       return dataURL.replace(/^.+?base64,/, '').replace(/\r\n/g, '').replace(/\\/g, '%2B')
     },
     
-    // 前端生成uuid
-    UUID() {
-      return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) => {
-        return (c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))).toString(16)
-      })
-    },
-    
-    // JSON转CSV
-    JSONtoCSV(arr, columns, delimiter = ',') {
-      return [
-        columns.join(delimiter),
-        ...arr.map(obj => {
-          return columns.reduce(
-            (acc, key) =>
-              `${acc}${!acc.length ? '' : delimiter}"${!obj[key] ? '' : obj[key]}"`,
-            ''
-          )
-        }),
-      ].join('\n')
-    },
-    
     // 判断数组是否有重复的子项
     isUnique(arr) {
       return arr.length === new Set(arr).size
@@ -280,6 +253,11 @@
       if (v === undefined) return 'undefined'
       if (v === null) return 'null'
       return v.constructor.name.toLowerCase()
+    },
+    
+    // 震动
+    vibrate(val = 50) {
+      navigator.vibrate([val])
     },
   
     // 求两个数组的交集并过滤重复的值
@@ -338,28 +316,6 @@
       })
     },
     
-    // 比较两个字符串的相似度  返回 0 - 1之间的数, 1:相似度100%
-    compareTwoStr(t, e) {
-      if (((t = t.replace(/\s+/g, '')), (e = e.replace(/\s+/g, '')), !t.length && !e.length)) return 1
-      if (!t.length || !e.length) return 0
-      if (t === e) return 1
-      if (1 === t.length && 1 === e.length) return 0
-      if (t.length < 2 || e.length < 2) return 0
-      let n = new Map()
-      for (let e = 0; e < t.length - 1; e++) {
-        const r = t.substring(e, e + 2),
-          s = n.has(r) ? n.get(r) + 1 : 1
-        n.set(r, s)
-      }
-      let r = 0
-      for (let t = 0; t < e.length - 1; t++) {
-        const s = e.substring(t, t + 2),
-          g = n.has(s) ? n.get(s) : 0
-        g > 0 && (n.set(s, g - 1), r++)
-      }
-      return (2 * r) / (t.length + e.length - 2)
-    },
-    
     // 通过v获取k  value get key
     getObjKey(obj, val) {
       return Object.keys(obj).find(v => obj[v] === val)
@@ -368,6 +324,71 @@
     // 替代eval函数
     evalFunc(fnStr) {
       return Function(`return ${fnStr}`)()
+    },
+    
+    isMobile() {
+      return (/(iPhone|iPod|iPad|Android|ios)/i.test(navigator.userAgent))
+    },
+    isAndroid() {
+      return (/(Android|Adr)/i.test(navigator.userAgent))
+    },
+    isIOS() {
+      return (/\(i[^;]+;( U;)? CPU.+Mac OS X/.test(navigator.userAgent))
+    },
+    isWx() {
+      return (/micromessenger/i.test(navigator.userAgent))
+    },
+    
+    // hexToRgb('#fff')
+    // hexToRgb('#f3558392')
+    // hexToRgb('f35582') 
+    hexToRgb(hex) {
+      let alpha = false,
+          h = hex.slice(hex.startsWith('#') ? 1 : 0)
+      if (h.length === 3) {
+        h = [...h].map(x => x + x).join('')
+      }
+      else if (h.length === 8) {
+        alpha = true
+      }
+      h = parseInt(h, 16)
+      return (
+        'rgb' +
+        (alpha ? 'a' : '') +
+        '(' +
+        (h >>> (alpha ? 24 : 16)) +
+        ', ' +
+        ((h & (alpha ? 0x00ff0000 : 0x00ff00)) >>> (alpha ? 16 : 8)) +
+        ', ' +
+        ((h & (alpha ? 0x0000ff00 : 0x0000ff)) >>> (alpha ? 8 : 0)) +
+        (alpha ? `, ${h & 0x000000ff}` : '') +
+        ')'
+      )
+    },
+    
+    // rgb转16进制颜色
+    rgb2Hex(color) {
+      let rgb = color.split(',')
+      let r = parseInt(rgb[0].split('(')[1], 10)
+      let g = parseInt(rgb[1], 10)
+      let b = parseInt(rgb[2].split(')')[0], 10)
+      let hex = '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
+      return hex
+    },
+    
+    // 判断是否是二代身份证
+    isIdCard(val) {
+      return /^\d{6}(18|19|20|21)\d{2}(0\d|10|11|12)([0-2]\d|30|31)\d{3}(\d|X|x)$/.test(val)
+    },
+    
+    // 通过身份证获取性别
+    getSexById(id) {
+      return id.substr(-2, 1) % 2 === 0 ? '女' : '男'
+    },
+    
+    // 通过身份证获取出生日期
+    getBirthById(id) {
+      return id.substr(6, 8).replace(/^(\d{4})(\d{2})(\d{2})$/, '$1-$2-$3')
     },
   }
 })(window)
