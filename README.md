@@ -9,7 +9,7 @@
 
 ```
 
-or-
+or
 
 > npm i vio-utils -S
 
