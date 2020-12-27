@@ -1,6 +1,5 @@
 
 const utils = {
-  // 是否是数字
   isNum(val) {
     return val === +val
   },
@@ -321,6 +320,8 @@ const utils = {
   getObjKey(obj, val) {
     return Object.keys(obj).find(v => obj[v] === val)
   },
+  
+  // 替代eval函数
   evalFunc(fnStr) {
     return Function(`return ${fnStr}`)()
   },
