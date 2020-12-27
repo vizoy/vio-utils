@@ -390,5 +390,108 @@
     getBirthById(id) {
       return id.substr(6, 8).replace(/^(\d{4})(\d{2})(\d{2})$/, '$1-$2-$3')
     },
+    
+    // img数据上报
+    reportImg(url) {
+      new Image().src = url
+    },
+    
+    // 设置概率
+    getProbability(prob = 0.5) {
+      return prob > Math.random()
+    },
+    
+    // 等待DOM加载完成 rely on jquery
+    // eg: await loadEl('.box')  or await loadEl(v => $(v).find('li'))
+    loadEl(fnz, timeout = 30e3) {
+      return new Promise(resolve => {
+        const iFn = () => {
+          let el = typeof fnz === 'function' ? fnz() : $(fnz)
+          if (el.length) {
+            return resolve(el)
+          }
+          setTimeout(iFn, 50)
+        }
+        iFn()
+        setTimeout(() => {
+          return resolve($(null))
+        }, timeout)
+      })
+    },
+    
+    // 返回n天前的日期字符串
+    daysAgo(n) {
+      let d = new Date()
+      d.setDate(d.getDate() - Math.abs(n))
+      return d.toISOString().split('T')[0]
+    },
+    
+    // 赋值时会同步到本地存储
+    createProxyStorage(prefix, obj) {
+      for (let k in obj) {
+        let type = typeof obj[k]
+        obj[`_${k}_`] = type.replace(/^./, m => m.toUpperCase() )
+        if (!localStorage.getItem(`${prefix}[${k}]`) && !/^_|_$/.test(k)) {
+          localStorage.setItem(`${prefix}[${k}]`, type === 'object' ? JSON.stringify(obj[k]) : obj[k])
+        }
+      }
+      return new Proxy(obj, {
+        set(obj, prop, value) {
+          if (!obj[`_${prop}_`]) {
+            throw new Error(`Please initialize: ${prop}`)
+          }
+          localStorage.setItem(`${prefix}[${prop}]`, obj[`_${prop}_`] === 'Object' ? JSON.stringify(value) : value)
+        },
+        get(obj, prop) {
+          let lsVal = localStorage.getItem(`${prefix}[${prop}]`)
+          let _p = obj[`_${prop}_`]
+          if (_p === 'Object') {
+            return JSON.parse(lsVal)
+          }
+          if (_p === 'Boolean') {
+            return lsVal === 'true'
+          }
+          return Function(`return ${_p}`)()(lsVal)
+        }
+      })
+    },
+    
+    // 监听dom状态(显示或隐藏), 监测, 检测dom
+    // watchDomState('.modal', 'hide').then()
+    watchDomState(selector, state) {
+      return new Promise((resolve) => {
+        const iFn = () => {
+          setTimeout(() => {
+            let el = document.querySelector(selector)
+            let show = !!el && getComputedStyle(el).display !== 'none'
+            if (show && state === 'show') {
+              return resolve(true)
+            } else if (!show && state === 'hide') {
+              return resolve(true)
+            }
+            iFn()
+          }, 50)
+        }
+        iFn()
+      })
+    },
+    
+    // 监听dom节点或后代节点变化 el [, options], cb
+    watchDom(el, ...args) {
+      if (typeof el === 'string') {
+        el = document.querySelector(el)
+      }
+      let opt = args.length > 1 ? args[0] : {}
+      let cb = args.length > 1 ? args[1] : args[0]
+      return new MutationObserver((mutations, observer) => {
+        cb(mutations)
+      }).observe(el, Object.assign({
+        childList: true,
+        attributes: true,
+        characterData: true,
+        subtree: true,
+      }, opt))
+    },
+    
   }
 })(window)

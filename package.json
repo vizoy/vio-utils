@@ -1,6 +1,6 @@
 {
   "name": "vio-utils",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "common utils",
   "main": "index.js",
   "scripts": {
