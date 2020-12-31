@@ -249,15 +249,17 @@ const utils = {
     })
   },
   // 获取数据类型
-  getType(v) {
-    if (v === undefined) return 'undefined'
-    if (v === null) return 'null'
-    return v.constructor.name.toLowerCase()
+  getType(val) {
+    if (val === undefined) return 'undefined'
+    if (val === null) return 'null'
+    return val.constructor.name.toLowerCase()
   },
   
   // 震动
   vibrate(val = 50) {
-    navigator.vibrate([val])
+    try {
+      navigator.vibrate(Array.isArray(val) ? val : [val])
+    } catch(e) {}
   },
 
   // 求两个数组的交集并过滤重复的值
@@ -367,7 +369,7 @@ const utils = {
   },
   
   // rgb转16进制颜色
-  rgb2Hex(color) {
+  rgbToHex(color) {
     let rgb = color.split(',')
     let r = parseInt(rgb[0].split('(')[1], 10)
     let g = parseInt(rgb[1], 10)
