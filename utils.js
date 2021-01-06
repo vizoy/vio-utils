@@ -10,7 +10,20 @@
     },
     
     // 随机数字
-    randNum(min, max) {
+    // min max, or length && length < 16
+    randNum(...arg) {
+      let limit = Number.MAX_SAFE_INTEGER
+      let min = 0
+      let max = 0
+      if (!arg.length) throw new Error('arguments cannot be empty')
+      if (arg,length > 2) throw new Error('pass two parameters at most')
+      if (arg.length === 1) {
+        min = Math.min(Math.pow(10, arg - 1), limit)
+        max = Math.min(Math.pow(10, arg) - 1, limit)
+      } else {
+        min = Math.min(arg[0], limit)
+        max = Math.min(arg[1], limit)
+      }
       return Math.floor((Math.random() * (max - min + 1)) + min)
     },
     
