@@ -16,7 +16,7 @@
       let min = 0
       let max = 0
       if (!arg.length) throw new Error('arguments cannot be empty')
-      if (arg,length > 2) throw new Error('pass two parameters at most')
+      if (arg.length > 2) throw new Error('pass two parameters at most')
       if (arg.length === 1) {
         min = Math.min(Math.pow(10, arg - 1), limit)
         max = Math.min(Math.pow(10, arg) - 1, limit)
