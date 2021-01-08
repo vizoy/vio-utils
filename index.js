@@ -96,15 +96,24 @@ const utils = {
     }))
   },
   getStore(key) {
-    let o = JSON.parse(localStorage.getItem(key))
-    if (o) {
-      let now = Math.trunc(Date.now() / 1000)
-      if (o.expires - now > 0) {
-        return o.value
+    try {
+      let o = JSON.parse(localStorage.getItem(key))
+      if (typeof o !== 'object') {
+        this.setStore(key, o)
+        return this.getStore(key)
       }
+      if (o) {
+        let now = Math.trunc(Date.now() / 1000)
+        if (o.expires - now > 0) {
+          return o.value
+        }
+      }
+      localStorage.removeItem(key)
+      return null
+    } catch (e) {
+      this.setStore(key, localStorage.getItem(key))
+      return this.getStore(key)
     }
-    localStorage.removeItem(key)
-    return null
   },
   
   // 四舍五入保留小数后n位
