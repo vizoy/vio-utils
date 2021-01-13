@@ -10,7 +10,20 @@
     },
     
     // 随机数字
-    randNum(min, max) {
+    // min max, or length && length < 16
+    randNum(...arg) {
+      let limit = Number.MAX_SAFE_INTEGER
+      let min = 0
+      let max = 0
+      if (!arg.length) throw new Error('arguments cannot be empty')
+      if (arg.length > 2) throw new Error('pass two parameters at most')
+      if (arg.length === 1) {
+        min = Math.min(Math.pow(10, arg - 1), limit)
+        max = Math.min(Math.pow(10, arg) - 1, limit)
+      } else {
+        min = Math.min(arg[0], limit)
+        max = Math.min(arg[1], limit)
+      }
       return Math.floor((Math.random() * (max - min + 1)) + min)
     },
     
@@ -83,15 +96,24 @@
       }))
     },
     getStore(key) {
-      let o = JSON.parse(localStorage.getItem(key))
-      if (o) {
-        let now = Math.trunc(Date.now() / 1000)
-        if (o.expires - now > 0) {
-          return o.value
+      try {
+        let o = JSON.parse(localStorage.getItem(key))
+        if (typeof o !== 'object') {
+          this.setStore(key, o)
+          return this.getStore(key)
         }
+        if (o) {
+          let now = Math.trunc(Date.now() / 1000)
+          if (o.expires - now > 0) {
+            return o.value
+          }
+        }
+        localStorage.removeItem(key)
+        return null
+      } catch (e) {
+        this.setStore(key, localStorage.getItem(key))
+        return this.getStore(key)
       }
-      localStorage.removeItem(key)
-      return null
     },
     
     // 四舍五入保留小数后n位
@@ -257,7 +279,9 @@
     
     // 震动
     vibrate(val = 50) {
-      navigator.vibrate([val])
+      try {
+        navigator.vibrate(Array.isArray(val) ? val : [val])
+      } catch(e) {}
     },
   
     // 求两个数组的交集并过滤重复的值
@@ -367,7 +391,7 @@
     },
     
     // rgb转16进制颜色
-    rgb2Hex(color) {
+    rgbToHex(color) {
       let rgb = color.split(',')
       let r = parseInt(rgb[0].split('(')[1], 10)
       let g = parseInt(rgb[1], 10)
