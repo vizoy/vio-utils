@@ -391,6 +391,10 @@ const utils = {
     return id.substr(6, 8).replace(/^(\d{4})(\d{2})(\d{2})$/, '$1-$2-$3')
   },
   
+  isIpv4(str) {
+    return /^(25[0-5]|2[0-4]\d|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}$/.test(str)
+  },
+  
 }
 
 export default utils
