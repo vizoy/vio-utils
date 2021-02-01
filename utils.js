@@ -230,16 +230,21 @@
       }
       return num
     },
-    // 图片转换成base64编码
-    toBase64(img) {
+    // 图片转换成base64编码 @return { Promise }
+    imgToBase64(imgUrl) {
       let canvas = document.createElement('canvas')
-      canvas.width = img.width
-      canvas.height = img.height
       let ctx = canvas.getContext('2d')
-      ctx.drawImage(img, 0, 0, img.width, img.height)
-      let ext = img.src.substring(img.src.lastIndexOf('.') + 1).toLowerCase()
-      let dataURL = canvas.toDataURL('image/' + ext)
-      return dataURL.replace(/^.+?base64,/, '').replace(/\r\n/g, '').replace(/\\/g, '%2B')
+      let img = new Image
+      img.crossOrigin = 'Anonymous'
+      img.src = imgUrl
+      return new Promise((resolve, reject) => {
+        img.addEventListener('load', () => {
+          ctx.width = img.width
+          ctx.height = img.height
+          ctx.drawImage(img, 0, 0, img.width, img.height)
+          return resolve(canvas.toDataURL('image/png'))
+        }, false)
+      })
     },
     
     // 判断数组是否有重复的子项
