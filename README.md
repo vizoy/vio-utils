@@ -2,8 +2,7 @@
 # Usage
 
 ``` js
-<script src="https://unpkg.com/vio-utils/utils.js"></script>
-// <script src="https://cdn.jsdelivr.net/npm/vio-utils/utils.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vio-utils/utils.min.js"></script>
 ```
 
 or
