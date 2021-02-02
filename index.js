@@ -10,20 +10,15 @@ const utils = {
   },
   
   // 随机数字
-  // min max, or length && length < 16
-  randNum(...arg) {
-    let limit = Number.MAX_SAFE_INTEGER
-    let min = 0
-    let max = 0
-    if (!arg.length) throw new Error('arguments cannot be empty')
-    if (arg.length > 2) throw new Error('pass two parameters at most')
-    if (arg.length === 1) {
-      min = Math.min(Math.pow(10, arg - 1), limit)
-      max = Math.min(Math.pow(10, arg) - 1, limit)
-    } else {
-      min = Math.min(arg[0], limit)
-      max = Math.min(arg[1], limit)
-    }
+  // min max, or length && length <= 20
+  randNum(...args) {
+    let limit = 10 ** 20
+    if (!args.length) throw new Error('params cannot be empty')
+    if (args.length > 2) throw new Error('pass two params at most')
+    if (args < 0 || args[0] < 0) throw new Error('params should positive integer')
+    if (10 ** args > limit) throw new Error('Exceed maximum limit')
+    let min = args.length === 1 ? 10 ** (args - 1) : args[0]
+    let max = args.length === 1 ? 10 ** args - 1 : args[1]
     return Math.floor((Math.random() * (max - min + 1)) + min)
   },
   
@@ -140,8 +135,8 @@ const utils = {
     return new Promise(resolve => setTimeout(resolve, ms))
   },
   
-  // 复制文本
-  copyText(text) {
+  // 复制文本(已废弃) 将来可能会移除
+  copyTextOld(text) {
     const input = document.createElement('input')
     input.setAttribute('readonly', 'readonly')
     input.setAttribute('value', text)
@@ -149,6 +144,13 @@ const utils = {
     input.select()
     document.execCommand('copy')
     document.body.removeChild(input)
+  },
+  
+  // 复制文本(推荐)
+  copyText(str) {
+    try {
+      navigator.clipboard.writeText(str)
+    } catch (err) {}
   },
   
   // 下载文本
@@ -351,8 +353,9 @@ const utils = {
   },
   
   // 替代eval函数
-  evalFunc(fnStr) {
-    return Function(`return ${fnStr}`)()
+  evalFunc(str) {
+    if (typeof str !== 'string') throw new Error('params should be a string')
+    return Function(`return () => {${str}}`)()()
   },
   
   isMobile() {
