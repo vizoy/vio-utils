@@ -432,7 +432,7 @@
     },
     
     // 设置概率
-    getProbability(prob = 0.5) {
+    getProb(prob = 0.5) {
       return prob > Math.random()
     },
     

@@ -427,6 +427,11 @@ const utils = {
     return /^(25[0-5]|2[0-4]\d|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}$/.test(str)
   },
   
+  // 设置概率
+  getProb(prob = 0.5) {
+    return prob > Math.random()
+  },
+  
 }
 
 export default utils
