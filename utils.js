@@ -70,10 +70,10 @@
     // 节流
     throttle(func, wait) {
       let start = 0
-      return function() {
+      return function(...args) {
         let now = Date.now()
         if (now - start >= wait) {
-          func.apply(this, arguments)
+          func.apply(this, args)
           start = now
         }
       }
@@ -82,10 +82,10 @@
     // 防抖
     debounce(func, delay) {
       let timer = null
-      return function() {
+      return function(...args) {
         timer && clearTimeout(timer)
         timer = setTimeout(() => {
-          func.apply(this, arguments)
+          func.apply(this, args)
         }, delay)
       }
     },
