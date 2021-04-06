@@ -535,5 +535,27 @@
       }, opt))
     },
     
+    // 比较两个字符串
+    compareTwoStr(t, e) {
+      if (((t = t.replace(/\s+/g, '')), (e = e.replace(/\s+/g, '')), !t.length && !e.length)) return 1
+      if (!t.length || !e.length) return 0
+      if (t === e) return 1
+      if (1 === t.length && 1 === e.length) return 0
+      if (t.length < 2 || e.length < 2) return 0
+      let n = new Map()
+      for (let e = 0; e < t.length - 1; e++) {
+        const r = t.substring(e, e + 2),
+          s = n.has(r) ? n.get(r) + 1 : 1
+        n.set(r, s)
+      }
+      let r = 0
+      for (let t = 0; t < e.length - 1; t++) {
+        const s = e.substring(t, t + 2),
+          g = n.has(s) ? n.get(s) : 0
+        g > 0 && (n.set(s, g - 1), r++)
+      }
+      return (2 * r) / (t.length + e.length - 2)
+    },
+    
   }
 })(window)
